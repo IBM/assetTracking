@@ -71,6 +71,7 @@ async function main() {
 
     console.log(asset.manufacturer + " has manufactured an asset with asset number "+asset.assetNumber);
     
+    // End of Trnsaction Invocation section
 
   } catch (error) {
 

@@ -1,37 +1,9 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+// Bring key classes into scope, most importantly Fabric SDK network class
 const fs = require('fs');
 const { FileSystemWallet, Gateway } = require('fabric-network');
 const Asset = require('../../contract/lib/asset');
 
-
 var Client = require("ibmiotf");
-
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
-var app = express();
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
 
 var appClientConfig = {
   org: 'ykcyvl',
@@ -62,13 +34,25 @@ let connectionOptions = {
 const gateway = new Gateway();
 
 async function connect() {
+
   await gateway.connect(connectionProfile, connectionOptions);
-  // Access PaperNet network
+  
+  // Access examplenet network
   console.log('Use network channel: mychannel.');
 
   const network = await gateway.getNetwork('mychannel');
 
   return await network.getContract('asset-tracking');
+
+      // TODO
+      // 1. register device *
+      // 2. get creds *
+
+      // 3. finish rest of node.js files
+      // 4. clone orgs
+      // 5. get creds in order
+      // 6. write steps
+
 }
 
 connect().then((contract) => {
@@ -106,5 +90,3 @@ connect().then((contract) => {
   
 });
 
-
-module.exports = app;
