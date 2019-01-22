@@ -10,7 +10,7 @@ const { FileSystemWallet, X509WalletMixin } = require('fabric-network');
 const path = require('path');
 
 // A wallet stores a collection of identities
-const wallet = new FileSystemWallet('../identity/user/balaji/wallet');
+const wallet = new FileSystemWallet('../identity/user/admin/wallet');
 
 async function main() {
 

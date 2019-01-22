@@ -19,7 +19,7 @@ const fs = require('fs');
 const { FileSystemWallet, Gateway } = require('fabric-network');
 
 // A wallet stores a collection of identities for use
-const wallet = new FileSystemWallet('../identity/user/balaji/wallet');
+const wallet = new FileSystemWallet('../identity/user/admin/wallet');
 
 // Load connection profile; will be used to locate a gateway
 const connectionProfile = JSON.parse(fs.readFileSync('../gateway/connection.json', 'utf8'));
@@ -50,7 +50,7 @@ async function main() {
 
     const contract = await network.getContract('asset-tracking');
 
-    let results = await contract.evaluateTransaction('queryByField', 'currentOwner', 'vendor1');
+    let results = await contract.evaluateTransaction('queryByField', 'assetType', 'asset');
     
     console.log(results.toString());
 

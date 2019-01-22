@@ -6,11 +6,11 @@ const Asset = require('../../contract/lib/asset');
 var Client = require("ibmiotf");
 
 var appClientConfig = {
-  org: 'ykcyvl',
-  id: 'iot_service',
+  org: '',
+  id: '',
   "domain": "internetofthings.ibmcloud.com",
-  "auth-key": 'a-ykcyvl-1wdr2useqj',
-  "auth-token": 'xTCtKH4uKOr)fCxvwf'
+  "auth-key": '',
+  "auth-token": ''
 };
 
 const appClient = new Client.IotfApplication(appClientConfig);
@@ -18,7 +18,7 @@ const appClient = new Client.IotfApplication(appClientConfig);
 appClient.connect();
 
 // A wallet stores a collection of identities for use
-const wallet = new FileSystemWallet('../../../digibank/identity/user/balaji/wallet');
+const wallet = new FileSystemWallet('../../identity/user/admin/wallet');
 
 // Load connection profile; will be used to locate a gateway
 const connectionProfile = JSON.parse(fs.readFileSync('../../gateway/connection.json', 'utf8'));

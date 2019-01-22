@@ -20,7 +20,7 @@ const { FileSystemWallet, Gateway } = require('fabric-network');
 const Asset = require('../contract/lib/asset');
 
 // A wallet stores a collection of identities for use
-const wallet = new FileSystemWallet('../identity/user/balaji/wallet');
+const wallet = new FileSystemWallet('../identity/user/admin/wallet');
 
 // Load connection profile; will be used to locate a gateway
 const connectionProfile = JSON.parse(fs.readFileSync('../gateway/connection.json', 'utf8'));

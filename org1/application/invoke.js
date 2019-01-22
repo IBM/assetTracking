@@ -20,7 +20,7 @@ const { FileSystemWallet, Gateway } = require('fabric-network');
 const Asset = require('../contract/lib/asset');
 
 // A wallet stores a collection of identities for use
-const wallet = new FileSystemWallet('../identity/user/balaji/wallet');
+const wallet = new FileSystemWallet('../identity/user/admin/wallet');
 
 // Load connection profile; will be used to locate a gateway
 const connectionProfile = JSON.parse(fs.readFileSync('../gateway/connection.json', 'utf8'));
@@ -64,12 +64,12 @@ async function main() {
     * 
     */
 
-    const manufactureResponse = await contract.submitTransaction('manufactureAsset', 'manufacturer1','A-006', 'asset');
-    let asset = Asset.fromBuffer(manufactureResponse);
+   const transferResponse = await contract.submitTransaction('transferAsset', "manufacturer1","A-001","manufacturer1","vendor1");
+   let asset = Asset.fromBuffer(transferResponse);
 
-    console.log(asset);
+   console.log(asset);
 
-    console.log(asset.manufacturer + " has manufactured an asset with asset number "+asset.assetNumber);
+   console.log(asset.manufacturer + " has manufactured an asset with asset number "+asset.assetNumber);
     
     // End of Trnsaction Invocation section
 
