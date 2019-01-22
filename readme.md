@@ -37,7 +37,7 @@ To start off, we are going to create the simulated IoT device which will invoke 
 
 For the code used to build this virtual device, we will be using a framework called Node-Red which is a low code environment which allows for drag and drop of preconfigured nodes to easily build applications. 
 
-IBM Cloud has a starterkit for IoT applications that comes with a Node-Red application and an instance of the IoT Platform service already bound to it. 
+IBM Cloud has a starter kit for IoT applications that comes with a Node-Red application and an instance of the IoT Platform service already bound to it. 
 
 1. Go to your IBM Cloud dashboard
 2. Click on **Catalog** at the top right of the page
@@ -214,7 +214,7 @@ Let's test a few transactions out. Submit the following transactions with the re
 
 ### manufactureAsset
 ```
-manufacturer1,A-003,asset
+manufacturer1,A-002,asset
 ```
 
 ### queryByField
@@ -224,37 +224,37 @@ assetType,asset
 
 ### transferAsset
 ```
-manufacturer1,A-003,manufacturer1,vendor1
+manufacturer1,A-002,manufacturer1,vendor1
 ```
 
 ### createLease
 ```
-L-001,contractor1,vendor1,A-003,manufacturer1,lease,Jan2019,Jan2021,1000.00,1000.00
+L-002,contractor1,vendor1,A-002,manufacturer1,lease,Jan2019,Jan2021,1000.00,1000.00
 ```
 
 ### transferAsset
 ```
-manufacturer1,A-003,vendor1,contractor1
+manufacturer1,A-002,vendor1,contractor1
 ```
 
 ### returnAsset
 ```
-manufacturer1,A-003,contractor1,vendor1,L-001,Jan2021
+manufacturer1,A-002,contractor1,vendor1,L-001,Jan2021
 ```
 
 ### inspectAsset
 ```
-manufacturer1,A-003,vendor1,L-001,21
+manufacturer1,A-002,vendor1,L-002,21
 ```
 
 ### repairAsset
 ```
-manufacturer1,A-003
+manufacturer1,A-002
 ```
 
 ### returnDeposit
 ```
-vendor1,L-001
+vendor1,L-002
 ```
 
 ### queryAll 
@@ -262,7 +262,7 @@ vendor1,L-001
 
 ### destroyAsset
 ```
-manufacturer1,A-003
+manufacturer1,A-002
 ```
 
 # Adding Identities to the Wallet
@@ -305,7 +305,7 @@ Using the 5 steps outlined above, invoke the following transactions
 1. Manufacture Asset
 2. Transfer Asset
 3. Create Lease
-4. Transfer Asset
+4. Transfer Asset again
 5. Return Asset
 6. Inspet Asset
 7. Repair Asset
@@ -322,8 +322,6 @@ The manufactureAsset transaction creates a new digital asset to be stored on the
     let asset = Asset.fromBuffer(manufactureResponse);
 
     console.log(asset);
-
-    console.log(asset.manufacturer + " has manufactured an asset with asset number "+asset.assetNumber);
     
 ```
 
@@ -336,8 +334,6 @@ The transferAsset transaction transfers ownership of the asset within the ledger
    let asset = Asset.fromBuffer(transferResponse);
 
    console.log(asset);
-
-   console.log(asset.manufacturer + " has manufactured an asset with asset number "+asset.assetNumber);
     
 ```
 
@@ -346,13 +342,22 @@ The createLease transaction creates a lease which defines the lessee, lessor, an
 
 ```javascript
 
-    const manufactureResponse = await contract.submitTransaction('manufactureAsset', 'manufacturer1','A-006', 'asset');
-    let asset = Asset.fromBuffer(manufactureResponse);
+   const createLeaseResponse = await contract.submitTransaction('createLease', "L-001","contractor1","vendor1","A-001","manufacturer1","lease","Jan2019","Jan2021","1000.00","1000.00");
+   let assetLease = AssetLease.fromBuffer(createLeaseResponse);
 
-    console.log(asset);
-
-    console.log(asset.manufacturer + " has manufactured an asset with asset number "+asset.assetNumber);
+   console.log(assetLease);
     
+```
+
+## Transfer Asset again
+The transferAsset transaction transfers ownership of the asset within the ledger. Returns the transferred asset
+
+```javascript
+
+   const transferResponse = await contract.submitTransaction('transferAsset', "manufacturer1","A-001","vendor1","contractor1");
+   let asset = Asset.fromBuffer(transferResponse);
+
+   console.log(asset);
 ```
 
 ## Return Asset
@@ -360,12 +365,16 @@ The returnAsset transaction is invoked when a lessee wants to return the leased 
 
 ```javascript
 
-    const manufactureResponse = await contract.submitTransaction('manufactureAsset', 'manufacturer1','A-006', 'asset');
-    let asset = Asset.fromBuffer(manufactureResponse);
+   const returnResponse = await contract.submitTransaction('returnAsset', "manufacturer1","A-001","contractor1","vendor1","L-001","Jan2021");
+   
+   let response = JSON.parse(returnResponse.toString());
 
-    console.log(asset);
+   let asset = response.asset;
+   let assetLease = response.assetLease;
 
-    console.log(asset.manufacturer + " has manufactured an asset with asset number "+asset.assetNumber);
+   console.log(asset);
+   console.log("");
+   console.log(assetLease);
     
 ```
 
@@ -374,12 +383,16 @@ The inspectAsset transaction is invoked when the asset has been received and ins
 
 ```javascript
 
-    const manufactureResponse = await contract.submitTransaction('manufactureAsset', 'manufacturer1','A-006', 'asset');
-    let asset = Asset.fromBuffer(manufactureResponse);
+   const inspecteResponse = await contract.submitTransaction('inspectAsset', "manufacturer1","A-001","vendor1","L-001","21");
 
-    console.log(asset);
+   let response = JSON.parse(inspecteResponse.toString());
 
-    console.log(asset.manufacturer + " has manufactured an asset with asset number "+asset.assetNumber);
+   let asset = response.asset;
+   let assetLease = response.assetLease;
+
+   console.log(asset);
+   console.log("");
+   console.log(assetLease);
     
 ```
 
@@ -388,12 +401,10 @@ The repairAsset transaction is called after the asset has been repaired. Sets th
 
 ```javascript
 
-    const manufactureResponse = await contract.submitTransaction('manufactureAsset', 'manufacturer1','A-006', 'asset');
-    let asset = Asset.fromBuffer(manufactureResponse);
+   const repairResponse = await contract.submitTransaction('repairAsset', 'manufacturer1','A-001');
+   let asset = Asset.fromBuffer(repairResponse);
 
-    console.log(asset);
-
-    console.log(asset.manufacturer + " has manufactured an asset with asset number "+asset.assetNumber);
+   console.log(asset);
     
 ```
 
@@ -402,12 +413,10 @@ The returnDepost transaction records the amount of the depost to be returned to 
 
 ```javascript
 
-    const manufactureResponse = await contract.submitTransaction('manufactureAsset', 'manufacturer1','A-006', 'asset');
-    let asset = Asset.fromBuffer(manufactureResponse);
+   const returnDepositResponse = await contract.submitTransaction('returnDeposit', 'vendor1','L-001');
+   let assetLease = AssetLease.fromBuffer(returnDepositResponse);
 
-    console.log(asset);
-
-    console.log(asset.manufacturer + " has manufactured an asset with asset number "+asset.assetNumber);
+   console.log(assetLease);
     
 ```
 
@@ -468,4 +477,4 @@ node queryAll.js
 
 
 # Recap
-In this lab we did a lot. First we created a virtual device with Node-Red and then configured the IBM IoT Platform and received API credentials. Next we created the logspout container to monitor logs from our Hyperledger Fabric network. After that, we packaged, installed, and instantiated a smart contract on our local Hyperledger Fabric network. This allowed us to test out some of our transactions using the VSCode plugin. Once we were done testing out the transactions we decided to import some identities and start invoking transactions with the Node SDK. Then, we started the local IoT app to start listeing for scan events which we then began to send from our Node-Red app. Finally, we queried the world state database using two different query programs.
+In this lab we did a lot. First we created a virtual device with Node-Red and then configured the IBM IoT Platform and received API credentials. Next we created the logspout container to monitor logs from our Hyperledger Fabric network. After that, we packaged, installed, and instantiated a smart contract on our local Hyperledger Fabric network. This allowed us to test out some of our transactions using the VSCode plugin. Once we were done testing out the transactions we decided to import some identities and start invoking transactions with the Node SDK. Then, we started the local IoT app to start listening for scan events which we then began to send from our Node-Red app. Finally, we queried the world state database using two different query programs.

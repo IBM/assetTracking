@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 const fs = require('fs');
 const { FileSystemWallet, Gateway } = require('fabric-network');
 const Asset = require('../contract/lib/asset');
+const AssetLease = require('../contract/lib/assetLease');
 
 // A wallet stores a collection of identities for use
 const wallet = new FileSystemWallet('../identity/user/admin/wallet');
@@ -64,14 +65,18 @@ async function main() {
     * 
     */
 
-   const transferResponse = await contract.submitTransaction('transferAsset', "manufacturer1","A-001","manufacturer1","vendor1");
-   let asset = Asset.fromBuffer(transferResponse);
 
-   console.log(asset);
 
-   console.log(asset.manufacturer + " has manufactured an asset with asset number "+asset.assetNumber);
+
+
+
+
+
+
     
-    // End of Trnsaction Invocation section
+
+    
+  // End of Trnsaction Invocation section
 
   } catch (error) {
 

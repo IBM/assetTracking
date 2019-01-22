@@ -183,9 +183,8 @@ class AssetContract extends Contract {
 
     // Validate current owner
     if (asset.getOwner() !== currentOwner) {
-        throw new Error('Asset ' + manufacturer + assetNumber + ' is not owned by ' + currentOwner);
+        throw new Error('Asset ' + manufacturer +":"+ assetNumber + ' is not owned by ' + currentOwner);
     }
-
 
     // Set owner back to lessor
     asset.setOwner(lessor);
@@ -202,10 +201,9 @@ class AssetContract extends Contract {
     // Update asset lease
     await ctx.leaseList.updateLease(assetLease);
 
-    //  Must return a serialized asset and lease to caller of smart contract
-    return [asset.toBuffer(), assetLease.toBuffer()];
+    //  Must return a serialized lease to caller of smart contract
+    return { "asset": asset, "assetLease": assetLease};
 }
-
 
     /**
      * Update Asset Location
@@ -271,7 +269,7 @@ class AssetContract extends Contract {
         await ctx.assetList.updateAsset(asset);
 
         //  Must return a serialized asset and lease to caller of smart contract
-        return [asset.toBuffer(), assetLease.toBuffer()];
+        return { "asset": asset, "assetLease": assetLease};
     }
 
     /**
@@ -296,7 +294,7 @@ class AssetContract extends Contract {
         // Update asset
         await ctx.assetList.updateAsset(asset);
 
-        //  Must return a serialized asset and lease to caller of smart contract
+        //  Must return a serialized asset to caller of smart contract
         return asset.toBuffer();
     }
 
@@ -315,37 +313,45 @@ class AssetContract extends Contract {
 
         // Get the percent damage listed in the lease
         let damage = assetLease.getPercentDamaged();
+        let depositPaid = await assetLease.getDepositPaid();
+        console.log(depositPaid);
+        console.log(damage);
 
         // Based on a percentage of damage, one of the following cases will determine 
         // how much of the deposit the lessee will get back.
-        switch(damage) {
+        switch(true) {
 
             // less than 20% damage = 80% of deposit returned
-            case (damage<20):
-                assetLease.setDepositReturned(assetLease.get(depositPaid*.8));
+            case damage<20:
+                assetLease.setDepositReturned(depositPaid*.8);
+                console.log(assetLease.getDepositReturned());
                 break;
 
             // Greater than or equal to 20% damage & 
             // less than 40% damage = 60% of deposit returned
-            case (damage>=20 && damage<40):
-                assetLease.setDepositReturned(assetLease.get(depositPaid*.6));
+            case damage>=20 && damage<40:
+                assetLease.setDepositReturned(depositPaid*.6);
+                console.log(assetLease.getDepositReturned());
                 break;
 
             // Greater than or equal to 40% damage & 
             // less than 60% damage = 40% of deposit returned
-            case (damage>=40 && damage<60):
-                assetLease.setDepositReturned(assetLease.get(depositPaid*.4));
+            case damage>=40 && damage<60:
+                assetLease.setDepositReturned(depositPaid*.4);
+                console.log(assetLease.getDepositReturned());
                 break;
 
             // Greater than or equal to 60% damage & 
             // less than 80% damage = 20% of deposit returned            
-            case (damage>=60 && damage<80):
-                assetLease.setDepositReturned(assetLease.get(depositPaid*.2));
+            case damage>=60 && damage<80:
+                assetLease.setDepositReturned(depositPaid*.2);
+                console.log(assetLease.getDepositReturned());
                 break;
 
             // Greater than or equal to 80% damage = 0% of deposit returned            
-            case (damage>=80):
+            case damage>=80:
                 assetLease.setDepositReturned(0.0);
+                console.log(assetLease.getDepositReturned());
                 break;
         }
 
