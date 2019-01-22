@@ -44,7 +44,7 @@ IBM Cloud has a starterkit for IoT applications that comes with a Node-Red appli
 3. From the catalog, select **Starter Kits** from the category list on the left side to narrow the services shown.
 4. Then, find and click on the **Internet of Things Platform Starter** kit.
 
-![iotpStarter](./images/iotpSarter.png)
+![iotpStarter](./images/iotpStarter.png)
 
 5. On the next page, give the new application a name. It's important that the name be unique so that there are no hostname conflicts with other applications out there. To make it easy, you can add your initials before the hostname (e.g. My name is Oliver Rodriguez so I might name my application or-asset-tracking).
 
@@ -54,7 +54,7 @@ IBM Cloud has a starterkit for IoT applications that comes with a Node-Red appli
 
 7. Once the application is deployed, click on **Visit App URL** at the top of the page to go to the application.
 
-![appUrl](./images/appUrl.png);
+![appUrl](./images/appUrl.png)
 
 8. The first time you open a Node-Red application you have to go through the initial set up wizard. To start, create an admin username and password. You can also select the checkbox to give read access to anybody that visit's your app.
 
@@ -62,7 +62,7 @@ IBM Cloud has a starterkit for IoT applications that comes with a Node-Red appli
 
 10. To make any changes you will need to log in with the admin account created during set up. Click on the sillouette at the top right of the page and click **log in**. Then, enter your username and password to log in.
 
-![logIn](./images/logIn.png)
+![logIn](./images/login.png)
 
  You may notice that this application already comes with some starter code, go ahead and select it all with your curser by clicking and draging and then press your delete key.
 
@@ -82,11 +82,11 @@ Now that we have our flow imported, we now need to use the IBM IoT Platform to f
 1. From the dashboard, click on the IBM IoT Platform service. You may need to expand the *Cloud Foundry services* section.
 2. On the overview page for the service, click on **Launch**
 
-![launch](./images/launch.png);
+![launch](./images/launch.png)
 
 3. Once in the IoT Platform, click on the **Devices** button from the left navigation panel.
 
-![devices](./images/devices.png);
+![devices](./images/devices.png)
 
 ## Create a new Device Type
 
@@ -95,7 +95,7 @@ Now that we have our flow imported, we now need to use the IBM IoT Platform to f
 6. Once on the new page, click on **Add Device Type** at the top right.
 7. Then, ensure **Type** is **Device** and enter **asset** as the **Name**
 
-![newType](./images/newType.png);
+![newType](./images/newType.png)
 
 8. Click **Next** and click **Done** on the next page.
 
@@ -104,7 +104,7 @@ Now that we have our flow imported, we now need to use the IBM IoT Platform to f
 
 9. On the new page, click on **Register Devices**
 
-![registerDevices](./images/registerDevices.png);
+![registerDevices](./images/registerDevices.png)
 
 10. Next, ensure that **asset** is selected as the **Device Type** and enter **A-001** as the **DeviceID**
 11. Click **Next**, and then **Next** again on the device defaults page, and then **Next** again on the token generation page.
@@ -113,7 +113,7 @@ Now that we have our flow imported, we now need to use the IBM IoT Platform to f
 
  It's important to copy the Authentication Token as you will not be able to retrieve it once you leave the page. 
 
-![deviceCreds](./images/deviceCreds.png);
+![deviceCreds](./images/deviceCreds.png)
 
 
 ## Register an App
@@ -121,7 +121,7 @@ Now we need to register an application with the platform to generate an API key
 
 1. Click on the **Apps** button on the left navigation panel
 
-![apps](./images/apps.png);
+![apps](./images/apps.png)
 
 2. On the Apps, page, click on **Generate API Key** at the top right of the page.
 
@@ -129,7 +129,7 @@ Now we need to register an application with the platform to generate an API key
 
 4. On the new page, select **Standard Application** as the **Role**
 
-1[role](./images/role.png);
+![role](./images/role.png)
 
 5. Click **Generate Key**
 
