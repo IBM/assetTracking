@@ -1,8 +1,32 @@
-# Asset Tracking with Blockchain and IoT Workshop
+# Asset Tracking with Blockchain and IoT
 
-In this workshop, we will be creating a local Hyperledger Fabric network using the IBM Blockchain Platform Visual Studio Code Extenstion which makes it easy to start developing smart contracts. The solution that we will be creating is an asset lifecycle solution that keeps track of the asset from creation to deletion. Also, we will be creating and managing asset leases which keep track of the lease terms in a lease agreement such as end date, price, and deposit amount. 
+In this pattern, we will be creating a local Hyperledger Fabric network using the IBM Blockchain Platform extension for VSCode which makes it easy to start developing smart contracts. 
+
+The solution that we will be creating is an asset lifecycle and tracking solution that keeps a record of the asset from creation to deletion. Also, we will be creating and managing asset leases which keep track of the lease terms in a lease agreement such as end date, price, and deposit amount. 
 
 For the IoT integration, we will be leveraging the IBM IoT Platform to handle device scanning at various locations as the asset is being transferred. Instead of having an actual physical device, we will be creating a web app pretending to be a device which will trigger these scans and notify a locally node.js app to invoke the updateAssetLocation transaction.
+
+After completing this pattern you will understand how to:
+- Deploy smart contracts to a local Hyperledger Fabric network
+- Create a simulated IoT device using the IBM IoT Platform and Node-Red
+- Connect to a Hyperledger Fabric application using the Fabric SDK for Node.js
+- Publish IoT events to the ledger on a device event such as a scan
+
+# Flow
+1. Smart contract is deployed to a local Hyperledger Fabric network
+2. As the asset is moved from place to place it is scanned via RFID or barcode.
+3. An application listening for IoT events then invokes a transfer transaction
+4. The location of the asset is updated in the ledger automatically.
+
+
+## Scenario
+In this demo scenario we have three participants: a manufacturer, a vendor, and a contractor. 
+1. The manufacturer creates the asset and sells it to the vendor. 
+2. The vendor then creates a lease with the contractor which defines terms including how much deposit is to be paid and how much deposit will be returned based on the amount of damage that the asset has received during the lease duration. For example, if the asset is returned with 21% damage then only 60% of the deposit will be returned. 
+3. After the lease duration is over, the asset is returned to the vendor and inspected for damage. The lease is then updated to reflect the amount of damage that the asset received.
+4. The asset is sent back to the manufacturer for repairs. If the vendor has a warranty to cover future repairs with the manufacturer, the manufacturer could take a look at the history of the asset and see if any activity such as imporper usage has voided the warranty.
+5. The asset is then returned to the vendor to be leased out again.
+
 
 ## Structure of Asset
 
@@ -474,3 +498,10 @@ node queryAll.js
 
 # Recap
 In this lab we did a lot. First we created a virtual device with Node-Red and then configured the IBM IoT Platform and received API credentials. Next we created the logspout container to monitor logs from our Hyperledger Fabric network. After that, we packaged, installed, and instantiated a smart contract on our local Hyperledger Fabric network. This allowed us to test out some of our transactions using the VSCode plugin. Once we were done testing out the transactions we decided to import some identities and start invoking transactions with the Node SDK. Then, we started the local IoT app to start listening for scan events which we then began to send from our Node-Red app. Finally, we queried the world state database using two different query programs.
+
+<!-- keep this -->
+## License
+
+This code pattern is licensed under the Apache License, Version 2. Separate third-party code objects invoked within this code pattern are licensed by their respective providers pursuant to their own separate licenses. Contributions are subject to the [Developer Certificate of Origin, Version 1.1](https://developercertificate.org/) and the [Apache License, Version 2](https://www.apache.org/licenses/LICENSE-2.0.txt).
+
+[Apache License FAQ](https://www.apache.org/foundation/license-faq.html#WhatDoesItMEAN)
