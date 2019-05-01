@@ -32,6 +32,11 @@ The asset lease being stored in the ledger has the following properties:
 - percentDamaged - The condition of the asset on return displayed in percent damaged
 - depositReturned - Based on the ammount of damage, the amount of the deposit returned
 
+# Prerequisites
+- an IBM Cloud account
+- VSCode
+- The IBM Blockchain Platform extension for VSCode 
+
 # Creating the Node-Red simulated device application
 To start off, we are going to create the simulated IoT device which will invoke the updateAssetLocation with the location where the device was "scanned". We will be using the IBM IoT Platform to facilitate the communicaton from our virtual device to a local IoT service which will be listening for published device events. 
 
@@ -39,7 +44,7 @@ For the code used to build this virtual device, we will be using a framework cal
 
 IBM Cloud has a starter kit for IoT applications that comes with a Node-Red application and an instance of the IoT Platform service already bound to it. 
 
-1. Go to your IBM Cloud dashboard
+1. Go to [IBM Cloud](https://cloud.ibm.com) and log in if you haven't already
 2. Click on **Catalog** at the top right of the page
 3. From the catalog, select **Starter Kits** from the category list on the left side to narrow the services shown.
 4. Then, find and click on the **Internet of Things Platform Starter** kit.
@@ -58,7 +63,7 @@ IBM Cloud has a starter kit for IoT applications that comes with a Node-Red appl
 
 8. The first time you open a Node-Red application you have to go through the initial set up wizard. To start, create an admin username and password. You can also select the checkbox to give read access to anybody that visit's your app.
 
-9. When done with the wizard you should be taken to the application. The page that you are brought to is called the **Canvas** which is where you drag and drop your nodes. The left pane that holds all the nodes is called the **pallette**.
+9. When done with the wizard you should be taken to the application. Click on the red button that says **Go to your Node-RED flow editor**. The page that you are brought to is called the **Canvas** which is where you drag and drop your nodes. The left pane that holds all the nodes is called the **pallette**.
 
 10. To make any changes you will need to log in with the admin account created during set up. Click on the sillouette at the top right of the page and click **log in**. Then, enter your username and password to log in.
 
@@ -79,7 +84,7 @@ Now that we have our flow imported, we now need to use the IBM IoT Platform to f
 
 # Connect with the IBM IoT Platform
 
-1. From the dashboard, click on the IBM IoT Platform service. You may need to expand the *Cloud Foundry services* section.
+1. From the dashboard of IBM Cloud, click on the IBM IoT Platform service. You may need to expand the *Cloud Foundry services* section.
 2. On the overview page for the service, click on **Launch**
 
 ![launch](./images/launch.png)
@@ -137,7 +142,27 @@ Now we need to register an application with the platform to generate an API key
 
 Again, just like with the device credentials, you cannot retrieve the token once you leave the page. Be sure to have it copied somewhere.
 
+7. Next, take a look at the address bar of your IBM IoT platform page and copy the part of the address that comes before *.internetofthings.ibmcloud.com*. It should be 6 characters. These character represent your IoT org. Copy them into a text document for later.
+
+![IoT Org](./images/org.png)
+
 Now that we have our device registered and the credentials saved, let's return to our code editor.
+
+# Starting the local Hyperledger Fabric network
+Before we go any further, we need to start our local blockchain network. Luckily for us, there is a plug in for VSCode called the IBM Blockchain Platform extension that allows us to get a network up and running with the push of a button. 
+
+1. If you haven't already, install the IBM Blockchain Platform extension in VSCode using the instructions found [here](https://github.com/IBM-Blockchain/blockchain-vscode-extension)
+
+2. Once the extension is installed, click on the IBM Blockchain Platform icon on the left toolbar of VSCode.
+
+![IBP icon](./images/ibp_icon.png)
+
+3. Hover your mouse over the section labeled **Local Fabric Ops** and click on the three button menu that appers and select **Start Fabric Runtime**
+
+![Start Fabric Runtime](./images/startFabricRuntime.png)
+
+Your local network will then be spun up in docker containers on your machine. We will be using this local networks to deploy our smart contracts to. 
+
 
 # Creating the Logspout Container
 Throughout this workshop we may need to see what the output of certain actions against the Hyperledger Fabric network are. To see this output we will be implementing a special container called the logspout container. This container will monitor all log output from all containers in a certain docker network. In this case, we can see what each container in our Hyperledger Fabric network is saying which will help with debuging.
@@ -154,7 +179,7 @@ In order to start using the chaincode we need to package, install, and instantia
 
 ![addToWorkspace](./images/addToWorkspace.png)
 
-3. In the new dialog window, find the **contract** folder in this repo and click **Add**. You should now see **contract** appear in the file explorer.
+3. In the new dialog window, find the **org1/contract** folder in this repo and click **Add**. You should now see **contract** appear in the file explorer.
 4. Then, click on the IBM Blockchain Platform extension on the left side of VSCode.
 5. Find the **Smart Contract Packages** section, hover your mouse over it, and click on the **+**.
 
@@ -175,27 +200,27 @@ Instantiation is performed on a channel by a peer and it is the process of creat
 
 ### Installing Chaincode:
 
-1. Click on **local_fabric** under the **Blockchain Connections** pane in VSCode.
-2. Select **mychannel** to expand it.
-3. Right click on **peer0.org1.example.com** and select **Install Smart Contract**
+1. In the IBM Blockchain Platform extension find the **Local Fabric Ops** section and click on **+ Install**
 
 ![install](./images/install.png)
 
-4. A prompt should appear at the top of VSCode asking to select a package to install. Select **asset-tracking** with the latest version number.
+2. In the prompts that come up select *peer0.org1.example.com*
 
-![selectPackage](./images/selectPackage.png)
+3. Then select the smart contract that we just packaged which should be *asset-tracking@1.0.0*
 
 Your smart contract is now installed. Next we need to instantiate it.
 
 ### Instantiate Chaincode
 
-1. Find the **Blockchain Connections** pane at the bottom left of VSCode, right click on **mychannel**, and select **Instantiate Smart Contract**
+1. Find the **Instantiated** section under **Local Fabric Ops** and click on **+ Instantiate**
 
 ![instantiate](./images/instantiate.png)
 
-2. A prompt should appear at the top of VSCode asking which smart contract to instantiate. Select the one that was just installed.
-3. The next prompt should ask for a function to call. Enter **Instantiate** and press enter.
-4. Then, a new prompt will ask for arguments to pass. We don't have any to pass in so just press enter.
+2. In the prompt that comes up, select *mychannel*
+
+3. A prompt should appear at the top of VSCode asking which smart contract to instantiate. Select the one that was just installed.
+4. The next prompt should ask for a function to call. Enter **instantiate** and press enter.
+5. Then, a new prompt will ask for arguments to pass. We don't have any to pass in so just press enter.
 5. While the smart contract is instantiating you can see how the process is going by checking on the logspout container which should be running in a terminal window.
 
 If there are any errors during instantiation, you can see what went wrong in the logspout container. 
@@ -205,71 +230,43 @@ Now we are ready to test out transactions.
 # Invoking transactions with the IBM Blockchain Platform VSCode Extension
 Another handy function of the IBM Blockchain Platform VSCode extenstion is the ability to invoke transactions without having to write an application to do so.
 
-1. In the **Blockchain Connections** pane, find **asset-tracking** under **mychannel** and click on it to expand it.
-2. Then, click on **AssetContract** to expand the list of transactions defined in the smart contract.
+1. In the **Fabric Gateways** pane of the IBM Blockchain Platform extension, click on **local_fabric** to expand it and click on **Admin@org1.example.com**.
+
+![fabric gateway](./images/fabric_gateway.png)
+
+This will allow us to intract with our local network through the eyes of the organization admin user. 
+
+2. Click on **mychannel** to display the smart contracts that are instantiated on our channel, mychannel. There should only be one, **asset-tracking**. Click on it.
+
+![mychannel contracts](./images/mychannel_contracts.png)
+
+3. You should now see a long list of transactions that are defined in the smart contract.
 
 You can right click on a transaction and select **submit transaction** to inoke the transaction in the contract. Once you select **submit transaction** you will be asked for arguments to pass in. You may need to check out the AssetContract.js file to see what transactions require which arguments.
 
-Let's test a few transactions out. Submit the following transactions with the respective arguments:
+Let's test out some transactions. Submit the following transactions with the respective arguments:
 
-### manufactureAsset
-```
-manufacturer1,A-002,asset
-```
+At the moment, our ledger doesn't have any information, let's populate it with some dummy data.
 
-### queryByField
-```
-assetType,asset
-```
+1. Right click on **setUpDemo** and select **submit transaction**
 
-### transferAsset
-```
-manufacturer1,A-002,manufacturer1,vendor1
-```
+2. When asked for agruments, press enter.
 
-### createLease
-```
-L-002,contractor1,vendor1,A-002,manufacturer1,lease,Jan2019,Jan2021,1000.00,1000.00
-```
+3. Next let's query the ledger and see what was added. Right click on the **queryAll** transaction and select **evaluate transaction**.
 
-### transferAsset
-```
-manufacturer1,A-002,vendor1,contractor1
-```
+Check out the terminal window that was tailing the logs in the logspout container to see the results of the query.
 
-### returnAsset
-```
-manufacturer1,A-002,contractor1,vendor1,L-001,Jan2021
-```
-
-### inspectAsset
-```
-manufacturer1,A-002,vendor1,L-002,21
-```
-
-### repairAsset
-```
-manufacturer1,A-002
-```
-
-### returnDeposit
-```
-vendor1,L-002
-```
-
-### queryAll 
-*No args needed*
-
-### destroyAsset
-```
-manufacturer1,A-002
-```
+![query results](./images/query_results.png)
 
 # Adding Identities to the Wallet
 Invoking transactions with the VSCode extension is easy enough but when you want to start building applications there are a few extra steps. Now that we are building applications we need to start worrying about identities. For this lab, we have one identity that we need to create.
 
 1. In your terminal navigate to the **application** folder and find the **addToWallet.js** program.
-2. Run the program with the following command
+2. Run the program with the following commands
+
+```bash
+npm install
+```
 
 ```bash
 node addToWallet.js
@@ -283,7 +280,7 @@ In this section we will be invoking the transactions defined in assetContract us
 In the **application** folder you will find **invoke.js**. In this file we will be copying and pasting the code to invoke transactions and see what the response is.
 
 1. In your code editor, navigate to this repo and open **org1/application/invoke.js**
-2. Look for the **Transaction Invocation block comment section.
+2. Look for the **Transaction Invocation** block comment section.
 
 ![txInvoc](./images/txInvoc.png)
 
@@ -293,14 +290,12 @@ In the **application** folder you will find **invoke.js**. In this file we will 
 5. Run **invoke.js** with the following command
 
 ```
-npm install 
-
 node invoke.js
 ```
 
 We will be following the same transaction order from the previous section on invoking transactions with the VSCode extension.
 
-Using the 5 steps outlined above, invoke the following transactions
+Using the 5 steps outlined above, invoke a few of the following transactions if you would like to see the SDK in action.
 
 1. Manufacture Asset
 2. Transfer Asset
@@ -424,7 +419,8 @@ The returnDepost transaction records the amount of the depost to be returned to 
 Remember that IoT set up that we did earlier? Now let's put it to use. In this section we will be starting a local application that listens for IoT events and updates the ledger. In our case these events will be "scans" from our simulated device.
 
 1. In VSCode navigate to this repo and open **application/iot_service/app.js**
-2. Look for the **appClientConfig** object around line 8 and enter the information that you saved earlier from the IoT Platform.
+2. Look for the **appClientConfig** object around line 8 and enter the application API **Auth key**, **Auth Token**, and **org id** that you saved earlier from the IoT Platform. 
+3. For *id* enter a name for your application that has no spaces such as "**tracking**".
 
 ![clientConfig](./images/clientConfig.png)
 
@@ -449,7 +445,7 @@ In this section we will trigger some device events from our simulated device whi
 
 3. All you need to do is click on the blue button next to the corresponding location that you want to simulate a scan even at.
 
-For example, if you want to simulate the device arriving at the vendor's inspection warehouse at the end of a lease, just click on the inject node next to the orange **Inspection Warehouse scn** node.
+For example, if you want to simulate the device arriving at the vendor's inspection warehouse at the end of a lease, just click on the inject node next to the orange **Inspection Warehouse scan** node.
 
 4. Check out the output in the terminal where the IoT app is running and you should see both the device event being received and the successful transaction response with the updated asset location.
 
