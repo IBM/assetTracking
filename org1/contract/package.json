@@ -1,6 +1,6 @@
 {
     "name": "asset-tracking",
-    "version": "0.0.15",
+    "version": "1.0.0",
     "description": "Asset Tracking Contract",
     "main": "index.js",
     "engines": {

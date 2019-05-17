@@ -17,9 +17,10 @@ SPDX-License-Identifier: Apache-2.0
 // Bring key classes into scope, most importantly Fabric SDK network class
 const fs = require('fs');
 const { FileSystemWallet, Gateway } = require('fabric-network');
+const homedir = require('os').homedir();
 
 // A wallet stores a collection of identities for use
-const wallet = new FileSystemWallet('../identity/user/admin/wallet');
+const wallet = new FileSystemWallet(homedir+'/.fabric-vscode/local_fabric_wallet/');
 
 // Load connection profile; will be used to locate a gateway
 const connectionProfile = JSON.parse(fs.readFileSync('../gateway/connection.json', 'utf8'));
@@ -36,7 +37,7 @@ async function main() {
 
     // Set connection options; identity and wallet
     let connectionOptions = {
-      identity: "Admin@org1.example.com",
+      identity: "admin",
       wallet: wallet,
       discovery: { enabled:false, asLocalhost: true }
     };

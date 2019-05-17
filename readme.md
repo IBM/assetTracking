@@ -4,19 +4,21 @@ In this pattern, we will be creating a local Hyperledger Fabric network using th
 
 The solution that we will be creating is an asset lifecycle and tracking solution that keeps a record of the asset from creation to deletion. Also, we will be creating and managing asset leases which keep track of the lease terms in a lease agreement such as end date, price, and deposit amount. 
 
-For the IoT integration, we will be leveraging the IBM IoT Platform to handle device scanning at various locations as the asset is being transferred. Instead of having an actual physical device, we will be creating a web app pretending to be a device which will trigger these scans and notify a locally node.js app to invoke the updateAssetLocation transaction.
+For the IoT integration, we will be leveraging the IBM Watson IoT Platform to handle device scanning at various locations as the asset is being transferred. Instead of having an actual physical device, we will be creating a web app pretending to be a device which will trigger these scans and notify a locally node.js app to invoke the updateAssetLocation transaction.
 
 After completing this pattern you will understand how to:
 - Deploy smart contracts to a local Hyperledger Fabric network
-- Create a simulated IoT device using the IBM IoT Platform and Node-Red
+- Create a simulated IoT device using the IBM Watson IoT Platform and Node-Red
 - Connect to a Hyperledger Fabric application using the Fabric SDK for Node.js
 - Publish IoT events to the ledger on a device event such as a scan
 
 # Flow
-1. Smart contract is deployed to a local Hyperledger Fabric network
-2. As the asset is moved from place to place it is scanned via RFID or barcode.
-3. An application listening for IoT events then invokes a transfer transaction
-4. The location of the asset is updated in the ledger automatically.
+1. The smart contract is deployed to a local Hyperledger Fabric network via the IBM Blockchain Platform extension for VS Code.
+2. As the asset is moved from place to place it is scanned via RFID or barcode by an IoT device. In this pattern, the device is simulated.
+3. The IoT device publishes an event notification to the IBM Watson IoT Platform, which then notifies all listening applications that a scan has taken place.
+4. An application listening to the IBM Watson IoT Platform for scanning events then invokes a transfer transaction.
+5. The location of the asset is updated in the ledger automatically.
+
 
 
 ## Scenario
@@ -62,11 +64,11 @@ The asset lease being stored in the ledger has the following properties:
 - The IBM Blockchain Platform extension for VSCode 
 
 # Creating the Node-Red simulated device application
-To start off, we are going to create the simulated IoT device which will invoke the updateAssetLocation with the location where the device was "scanned". We will be using the IBM IoT Platform to facilitate the communicaton from our virtual device to a local IoT service which will be listening for published device events. 
+To start off, we are going to create the simulated IoT device which will invoke the updateAssetLocation with the location where the device was "scanned". We will be using the IBM Watson IoT Platform to facilitate the communicaton from our virtual device to a local IoT service which will be listening for published device events. 
 
 For the code used to build this virtual device, we will be using a framework called Node-Red which is a low code environment which allows for drag and drop of preconfigured nodes to easily build applications. 
 
-IBM Cloud has a starter kit for IoT applications that comes with a Node-Red application and an instance of the IoT Platform service already bound to it. 
+IBM Cloud has a starter kit for IoT applications that comes with a Node-Red application and an instance of the IBM Watson IoT Platform service already bound to it. 
 
 1. Go to [IBM Cloud](https://cloud.ibm.com) and log in if you haven't already
 2. Click on **Catalog** at the top right of the page
@@ -87,7 +89,7 @@ IBM Cloud has a starter kit for IoT applications that comes with a Node-Red appl
 
 8. The first time you open a Node-Red application you have to go through the initial set up wizard. To start, create an admin username and password. You can also select the checkbox to give read access to anybody that visit's your app.
 
-9. When done with the wizard you should be taken to the application. Click on the red button that says **Go to your Node-RED flow editor**. The page that you are brought to is called the **Canvas** which is where you drag and drop your nodes. The left pane that holds all the nodes is called the **pallette**.
+9. When done with the wizard you should be taken to the application. Click on the red button that says **Go to your Node-RED flow editor**. The page that you are brought to is called the **Canvas** which is where you drag and drop your nodes. The left pane that holds all the nodes is called the **palette**.
 
 10. To make any changes you will need to log in with the admin account created during set up. Click on the sillouette at the top right of the page and click **log in**. Then, enter your username and password to log in.
 
@@ -99,16 +101,16 @@ IBM Cloud has a starter kit for IoT applications that comes with a Node-Red appl
 
 ![import](./images/import.png)
 
-Then paste in the contents of the **flow.json** file from this repo and click **Import**.
+Then paste in the contents of the [**flow.json**](./flow.json) file from this repo and click **Import**.
 
 ![flow](./images/flow.png)
 
-Now that we have our flow imported, we now need to use the IBM IoT Platform to facilitate communication between the virtual device and the local IoT application.
+Now that we have our flow imported, we now need to use the IBM Watson IoT Platform to facilitate communication between the virtual device and the local IoT application.
 
 
-# Connect with the IBM IoT Platform
+# Connect with the IBM Watson IoT Platform
 
-1. From the dashboard of IBM Cloud, click on the IBM IoT Platform service. You may need to expand the *Cloud Foundry services* section.
+1. From the dashboard of IBM Cloud, click on the IBM Watson IoT Platform service. You may need to expand the *Cloud Foundry services* section.
 2. On the overview page for the service, click on **Launch**
 
 ![launch](./images/launch.png)
@@ -166,7 +168,7 @@ Now we need to register an application with the platform to generate an API key
 
 Again, just like with the device credentials, you cannot retrieve the token once you leave the page. Be sure to have it copied somewhere.
 
-7. Next, take a look at the address bar of your IBM IoT platform page and copy the part of the address that comes before *.internetofthings.ibmcloud.com*. It should be 6 characters. These character represent your IoT org. Copy them into a text document for later.
+7. Next, take a look at the address bar of your IBM Watson IoT platform page and copy the part of the address that comes before *.internetofthings.ibmcloud.com*. It should be 6 characters. These character represent your IoT org. Copy them into a text document for later.
 
 ![IoT Org](./images/org.png)
 
@@ -175,7 +177,8 @@ Now that we have our device registered and the credentials saved, let's return t
 # Starting the local Hyperledger Fabric network
 Before we go any further, we need to start our local blockchain network. Luckily for us, there is a plug in for VSCode called the IBM Blockchain Platform extension that allows us to get a network up and running with the push of a button. 
 
-1. If you haven't already, install the IBM Blockchain Platform extension in VSCode using the instructions found [here](https://github.com/IBM-Blockchain/blockchain-vscode-extension)
+1. Open up Visual Studio Code
+2. If you don't already have it, install the IBM Blockchain Platform extension in VSCode using the instructions found [here](https://github.com/IBM-Blockchain/blockchain-vscode-extension)
 
 2. Once the extension is installed, click on the IBM Blockchain Platform icon on the left toolbar of VSCode.
 
@@ -199,15 +202,13 @@ Throughout this workshop we may need to see what the output of certain actions a
 In order to start using the chaincode we need to package, install, and instantiate it first. 
 
 1. To package the chaincode, first go to the file explorer in Visual Studio Code.
-2. Then, right click and select **Add Folder to Workspace**
+2. Then, right click in the empty space below the project files and select **Add Folder to Workspace**
 
 ![addToWorkspace](./images/addToWorkspace.png)
 
 3. In the new dialog window, find the **org1/contract** folder in this repo and click **Add**. You should now see **contract** appear in the file explorer.
 4. Then, click on the IBM Blockchain Platform extension on the left side of VSCode.
-5. Find the **Smart Contract Packages** section, hover your mouse over it, and click on the **+**.
-
-![smartContractPackages](./images/smartContractPackages.png)
+5. Find the **Smart Contract Packages** section, hover your mouse over it, and click on the three dot menu. Then select **package a smart contract project**
 
 6. A new prompt should appear at the top of VSCode asking to choose a workspace folder to package. Select **contract**
 
@@ -254,19 +255,17 @@ Now we are ready to test out transactions.
 # Invoking transactions with the IBM Blockchain Platform VSCode Extension
 Another handy function of the IBM Blockchain Platform VSCode extenstion is the ability to invoke transactions without having to write an application to do so.
 
-1. In the **Fabric Gateways** pane of the IBM Blockchain Platform extension, click on **local_fabric** to expand it and click on **Admin@org1.example.com**.
-
-![fabric gateway](./images/fabric_gateway.png)
+1. In the **Fabric Gateways** pane of the IBM Blockchain Platform extension, click on **local_fabric**.
 
 This will allow us to intract with our local network through the eyes of the organization admin user. 
 
-2. Click on **mychannel** to display the smart contracts that are instantiated on our channel, mychannel. There should only be one, **asset-tracking**. Click on it.
+2. Click on **Channels** and then **mychannel** to display the smart contracts that are instantiated on our channel, mychannel. There should only be one, **asset-tracking**. Click on it.
 
 ![mychannel contracts](./images/mychannel_contracts.png)
 
 3. You should now see a long list of transactions that are defined in the smart contract.
 
-You can right click on a transaction and select **submit transaction** to inoke the transaction in the contract. Once you select **submit transaction** you will be asked for arguments to pass in. You may need to check out the AssetContract.js file to see what transactions require which arguments.
+You can right click on a transaction and select **submit transaction** to invoke the transaction in the contract. Once you select **submit transaction** you will be asked for arguments to pass in. You may need to check out the AssetContract.js file to see what transactions require which arguments.
 
 Let's test out some transactions. Submit the following transactions with the respective arguments:
 
@@ -276,7 +275,7 @@ At the moment, our ledger doesn't have any information, let's populate it with s
 
 2. When asked for agruments, press enter.
 
-3. Next let's query the ledger and see what was added. Right click on the **queryAll** transaction and select **evaluate transaction**.
+3. Next let's query the ledger and see what was added. Right click on the **queryAll** transaction and select **evaluate transaction**. When asked for arguments, press enter.
 
 Check out the terminal window that was tailing the logs in the logspout container to see the results of the query.
 
@@ -337,7 +336,7 @@ The manufactureAsset transaction creates a new digital asset to be stored on the
 
 ```javascript
 
-    const manufactureResponse = await contract.submitTransaction('manufactureAsset', 'manufacturer1','A-001', 'asset');
+    const manufactureResponse = await contract.submitTransaction('manufactureAsset', 'manufacturer1','A-005', 'asset');
     let asset = Asset.fromBuffer(manufactureResponse);
 
     console.log(asset);
@@ -349,7 +348,7 @@ The transferAsset transaction transfers ownership of the asset within the ledger
 
 ```javascript
 
-   const transferResponse = await contract.submitTransaction('transferAsset', "manufacturer1","A-001","manufacturer1","vendor1");
+   const transferResponse = await contract.submitTransaction('transferAsset', "manufacturer1","A-005","manufacturer1","vendor1");
    let asset = Asset.fromBuffer(transferResponse);
 
    console.log(asset);
@@ -361,7 +360,7 @@ The createLease transaction creates a lease which defines the lessee, lessor, an
 
 ```javascript
 
-   const createLeaseResponse = await contract.submitTransaction('createLease', "L-001","contractor1","vendor1","A-001","manufacturer1","lease","Jan2019","Jan2021","1000.00","1000.00");
+   const createLeaseResponse = await contract.submitTransaction('createLease', "L-004","contractor1","vendor1","A-005","manufacturer1","lease","Jan2019","Jan2021","1000.00","1000.00");
    let assetLease = AssetLease.fromBuffer(createLeaseResponse);
 
    console.log(assetLease);
@@ -373,7 +372,7 @@ The transferAsset transaction transfers ownership of the asset within the ledger
 
 ```javascript
 
-   const transferResponse = await contract.submitTransaction('transferAsset', "manufacturer1","A-001","vendor1","contractor1");
+   const transferResponse = await contract.submitTransaction('transferAsset', "manufacturer1","A-005","vendor1","contractor1");
    let asset = Asset.fromBuffer(transferResponse);
 
    console.log(asset);
@@ -384,7 +383,7 @@ The returnAsset transaction is invoked when a lessee wants to return the leased 
 
 ```javascript
 
-   const returnResponse = await contract.submitTransaction('returnAsset', "manufacturer1","A-001","contractor1","vendor1","L-001","Jan2021");
+   const returnResponse = await contract.submitTransaction('returnAsset', "manufacturer1","A-005","contractor1","vendor1","L-004","Jan2021");
    
    let response = JSON.parse(returnResponse.toString());
 
@@ -402,7 +401,7 @@ The inspectAsset transaction is invoked when the asset has been received and ins
 
 ```javascript
 
-   const inspecteResponse = await contract.submitTransaction('inspectAsset', "manufacturer1","A-001","vendor1","L-001","21");
+   const inspecteResponse = await contract.submitTransaction('inspectAsset', "manufacturer1","A-005","vendor1","L-004","21");
 
    let response = JSON.parse(inspecteResponse.toString());
 
@@ -420,7 +419,7 @@ The repairAsset transaction is called after the asset has been repaired. Sets th
 
 ```javascript
 
-   const repairResponse = await contract.submitTransaction('repairAsset', 'manufacturer1','A-001');
+   const repairResponse = await contract.submitTransaction('repairAsset', 'manufacturer1','A-005');
    let asset = Asset.fromBuffer(repairResponse);
 
    console.log(asset);
@@ -432,7 +431,7 @@ The returnDepost transaction records the amount of the depost to be returned to 
 
 ```javascript
 
-   const returnDepositResponse = await contract.submitTransaction('returnDeposit', 'vendor1','L-001');
+   const returnDepositResponse = await contract.submitTransaction('returnDeposit', 'vendor1','L-004');
    let assetLease = AssetLease.fromBuffer(returnDepositResponse);
 
    console.log(assetLease);
@@ -480,7 +479,7 @@ To query the world state database there are two files that we can use to help us
 
 **queryAll** also does what it says. It returns everything in the world state.
 
-
+1. In a terminal window navigate to the **application** folder
 1. Run queryByField.js with this command
 
 ```
@@ -495,9 +494,11 @@ By default, it will return all assets with **assetType** that equals **"asset"**
 node queryAll.js
 ```
 
+This will return everything in the ledger.
+
 
 # Recap
-In this lab we did a lot. First we created a virtual device with Node-Red and then configured the IBM IoT Platform and received API credentials. Next we created the logspout container to monitor logs from our Hyperledger Fabric network. After that, we packaged, installed, and instantiated a smart contract on our local Hyperledger Fabric network. This allowed us to test out some of our transactions using the VSCode plugin. Once we were done testing out the transactions we decided to import some identities and start invoking transactions with the Node SDK. Then, we started the local IoT app to start listening for scan events which we then began to send from our Node-Red app. Finally, we queried the world state database using two different query programs.
+In this lab we did a lot. First we created a virtual device with Node-Red and then configured the IBM Watson IoT Platform and received API credentials. Next we created the logspout container to monitor logs from our Hyperledger Fabric network. After that, we packaged, installed, and instantiated a smart contract on our local Hyperledger Fabric network. This allowed us to test out some of our transactions using the VSCode plugin. Once we were done testing out the transactions we decided to import some identities and start invoking transactions with the Node SDK. Then, we started the local IoT app to start listening for scan events which we then began to send from our Node-Red app. Finally, we queried the world state database using two different query programs.
 
 <!-- keep this -->
 ## License
