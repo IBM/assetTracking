@@ -194,9 +194,13 @@ Your local network will then be spun up in docker containers on your machine. We
 # Creating the Logspout Container
 Throughout this workshop we may need to see what the output of certain actions against the Hyperledger Fabric network are. To see this output we will be implementing a special container called the logspout container. This container will monitor all log output from all containers in a certain docker network. In this case, we can see what each container in our Hyperledger Fabric network is saying which will help with debuging.
 
-1. Navigate to this repo in your terminal/command prompt
-2. Find and run **org1/configuration/cli/monitordocker.sh**
-3. Keep this terminal window open
+1. If you haven't already, clone this repo with the following command:
+```
+git clone https://github.com/IBM/assetTracking.git
+```
+2. Navigate to this repo in your terminal/command prompt
+3. Find and run **org1/configuration/cli/monitordocker.sh**
+4. Keep this terminal window open
 
 # Packaging chaincode
 In order to start using the chaincode we need to package, install, and instantiate it first. 
@@ -281,21 +285,6 @@ Check out the terminal window that was tailing the logs in the logspout containe
 
 ![query results](./images/query_results.png)
 
-# Adding Identities to the Wallet
-Invoking transactions with the VSCode extension is easy enough but when you want to start building applications there are a few extra steps. Now that we are building applications we need to start worrying about identities. For this lab, we have one identity that we need to create.
-
-1. In your terminal navigate to the **application** folder and find the **addToWallet.js** program.
-2. Run the program with the following commands
-
-```bash
-npm install
-```
-
-```bash
-node addToWallet.js
-```
-
-This program will add the identity to our wallet that we will use to invoke transactions using the Node SDK.
 
 # Invoking transactions with the Node SDK
 In this section we will be invoking the transactions defined in assetContract using the the **fabric-network** module. This is a new module introduced in Hyperledger Fabric 1.4.
@@ -310,9 +299,12 @@ In the **application** folder you will find **invoke.js**. In this file we will 
 3. In between the end of that comment block and the **End of transaction invocation section**, paste in the code for each transaction mentioned below.
 
 4. Save the file
-5. Run **invoke.js** with the following command
+5. Run the following commands
+
 
 ```
+npm install 
+
 node invoke.js
 ```
 
@@ -325,7 +317,7 @@ Using the 5 steps outlined above, invoke a few of the following transactions if 
 3. Create Lease
 4. Transfer Asset again
 5. Return Asset
-6. Inspet Asset
+6. Inspect Asset
 7. Repair Asset
 8. Return Deposit
 
