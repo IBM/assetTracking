@@ -21,7 +21,7 @@ const Asset = require('../contract/lib/asset');
 const homedir = require('os').homedir();
 
 // A wallet stores a collection of identities for use
-const wallet = new FileSystemWallet(homedir+'/.fabric-vscode/local_fabric_wallet/');
+const wallet = new FileSystemWallet(homedir+'/.fabric-vscode/wallets/local_fabric_wallet/');
 
 // Load connection profile; will be used to locate a gateway
 const connectionProfile = JSON.parse(fs.readFileSync('../gateway/connection.json', 'utf8'));
