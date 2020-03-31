@@ -1,5 +1,5 @@
 # Asset Tracking with Blockchain and IoT
-
+🚧🚧🚧 This pattern is currently being updated - it uses depracated components. Use at your own risk! 🚧🚧🚧
 In this pattern, we will be creating a local Hyperledger Fabric network using the IBM Blockchain Platform extension for VSCode which makes it easy to start developing smart contracts. 
 
 The solution that we will be creating is an asset lifecycle and tracking solution that keeps a record of the asset from creation to deletion. Also, we will be creating and managing asset leases which keep track of the lease terms in a lease agreement such as end date, price, and deposit amount. 
